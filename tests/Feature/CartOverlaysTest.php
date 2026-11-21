@@ -84,4 +84,19 @@ class CartOverlaysTest extends TestCase
             ->assertSee(money(1798), false)
             ->assertSee('Кошик: 2 товари', false);
     }
+
+    public function test_bundle_discount_applies_when_both_items_are_in_cart(): void
+    {
+        $powerbank = Product::query()->where('slug', 'powerbank-20000')->with('variants')->firstOrFail();
+        $lamp = Product::query()->where('slug', 'led-lamp')->with('variants')->firstOrFail();
+        $cart = app(Cart::class);
+
+        $cart->add($powerbank->variants->first());
+        $this->assertSame(0.0, $cart->bundleDiscount());
+
+        $cart->add($lamp->variants->first());
+        // (899 + 379) × 15% = 191,7 → 192; на сторінці товару набір коштує 1 086 ₴
+        $this->assertSame(192.0, $cart->bundleDiscount());
+        $this->assertSame(1086.0, $cart->total());
+    }
 }

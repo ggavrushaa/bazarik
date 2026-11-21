@@ -19,7 +19,7 @@ class CartBadge extends Component
     {
         return view('livewire.cart-badge', [
             'count' => $cart->count(),
-            'subtotal' => $cart->subtotal(),
+            'subtotal' => $cart->total(),
         ]);
     }
 }

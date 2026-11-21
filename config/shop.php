@@ -29,6 +29,8 @@ return [
 
     // Доставка Новою Поштою: орієнтовна ціна до відділення, якщо не дотягли до безкоштовної
     'delivery_cost' => (int) env('SHOP_DELIVERY_COST', 70),
+    // Кур'єр Нової Пошти до дверей, орієнтовно
+    'courier_cost' => (int) env('SHOP_COURIER_COST', 120),
     // Комісія НП за накладений платіж: 2% + 20 ₴
     'cod_fee_percent' => (float) env('SHOP_COD_FEE_PERCENT', 2),
     'cod_fee_fixed' => (int) env('SHOP_COD_FEE_FIXED', 20),

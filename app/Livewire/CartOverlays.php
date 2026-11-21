@@ -8,6 +8,7 @@ use App\Models\ProductVariant;
 use App\Support\Cart;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -24,12 +25,16 @@ use Livewire\Component;
 class CartOverlays extends Component
 {
     /** null | pick | added */
+    #[Locked]
     public ?string $mode = null;
 
+    #[Locked]
     public ?int $productId = null;
 
+    #[Locked]
     public ?int $variantId = null;
 
+    #[Locked]
     public int $quantity = 1;
 
     public ?string $error = null;
@@ -70,6 +75,7 @@ class CartOverlays extends Component
     #[On('add-variant')]
     public function addVariant(int $id, int $quantity = 1): void
     {
+        $quantity = max(1, min($quantity, 99));
         $variant = ProductVariant::query()->with('product')->find($id);
 
         if (! $variant || ! $variant->product?->is_active || ! $variant->isAvailable()) {
@@ -99,7 +105,7 @@ class CartOverlays extends Component
     public function render(Cart $cart): View
     {
         $product = $this->productId
-            ? Product::query()->with(['mainImage', 'variants'])->find($this->productId)
+            ? Product::query()->active()->with(['mainImage', 'variants'])->find($this->productId)
             : null;
 
         return view('livewire.cart-overlays', [

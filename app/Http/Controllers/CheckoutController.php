@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Cart;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
+/** Оформлення без акаунта: MobileCheckout / DeskCheckout (форма — Livewire CheckoutForm) */
 class CheckoutController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(Cart $cart): View|RedirectResponse
     {
-        abort(404); // TODO: етап 1
+        if ($cart->isEmpty()) {
+            return redirect()->route('cart');
+        }
+
+        return view('pages.checkout');
     }
 }

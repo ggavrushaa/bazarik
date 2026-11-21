@@ -117,6 +117,40 @@ class Cart
         return (float) $this->lines()->sum('total');
     }
 
+    /**
+     * «Разом дешевше»: якщо в кошику є товар і його товар-набір (bundle_product_id),
+     * на кожну пару діє bundle_discount % від суми пари. Округлюємо до гривні, як на сторінці товару.
+     */
+    public function bundleDiscount(): float
+    {
+        $lines = $this->lines();
+        $discount = 0.0;
+
+        foreach ($lines->groupBy(fn (array $l) => $l['product']->id) as $productLines) {
+            $product = $productLines->first()['product'];
+            if (! $product->bundle_product_id || ! $product->bundle_discount) {
+                continue;
+            }
+
+            $bundleLines = $lines->filter(fn (array $l) => $l['product']->id === $product->bundle_product_id);
+            $pairs = min($productLines->sum('quantity'), $bundleLines->sum('quantity'));
+            if ($pairs === 0) {
+                continue;
+            }
+
+            $pairPrice = $productLines->min('price') + $bundleLines->min('price');
+            $discount += round($pairPrice * $product->bundle_discount / 100) * $pairs;
+        }
+
+        return $discount;
+    }
+
+    /** До сплати за товари: сума мінус знижка за набори */
+    public function total(): float
+    {
+        return max(0, $this->subtotal() - $this->bundleDiscount());
+    }
+
     /** Сума без знижок — для рядка «Знижка» в підсумку */
     public function fullPrice(): float
     {
@@ -125,13 +159,13 @@ class Cart
 
     public function discount(): float
     {
-        return max(0, $this->fullPrice() - $this->subtotal());
+        return max(0, $this->fullPrice() - $this->total());
     }
 
     /** Скільки ще додати до безкоштовної доставки (0 — вже безкоштовно) */
     public function freeDeliveryRemaining(): float
     {
-        return max(0, config('shop.free_delivery_from') - $this->subtotal());
+        return max(0, config('shop.free_delivery_from') - $this->total());
     }
 
     /** 0–100 для смужки прогресу */
@@ -139,6 +173,6 @@ class Cart
     {
         $from = (float) config('shop.free_delivery_from');
 
-        return $from <= 0 ? 100 : (int) min(100, round($this->subtotal() / $from * 100));
+        return $from <= 0 ? 100 : (int) min(100, round($this->total() / $from * 100));
     }
 }

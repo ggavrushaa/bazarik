@@ -117,7 +117,7 @@
                     <x-shop.delivery-progress :value="$cart->freeDeliveryProgress()" />
                 </div>
                 <div class="hr"></div>
-                <div class="row"><span>У кошику {{ plural_uk($cart->count(), 'товар', 'товари', 'товарів') }}</span><b style="color: var(--ink); font-size: 17px" class="tabular">{{ money($cart->subtotal()) }}</b></div>
+                <div class="row"><span>У кошику {{ plural_uk($cart->count(), 'товар', 'товари', 'товарів') }}</span><b style="color: var(--ink); font-size: 17px" class="tabular">{{ money($cart->total()) }}</b></div>
                 <div style="display: flex; flex-direction: column; gap: 10px">
                     <a class="bz-btn bz-btn--dark bz-btn--l bz-btn--block" href="{{ route('cart') }}">Перейти до кошика</a>
                     <button class="bz-btn bz-btn--secondary bz-btn--l bz-btn--block" type="button" wire:click="close">Продовжити покупки</button>
