@@ -19,8 +19,10 @@ class ProductImage extends Model
 
     protected function url(): Attribute
     {
-        return Attribute::get(fn (): string => Str::startsWith($this->path, ['http://', 'https://'])
-            ? $this->path
-            : Storage::disk('public')->url($this->path));
+        return Attribute::get(fn (): string => match (true) {
+            Str::startsWith($this->path, ['http://', 'https://']) => $this->path,
+            Str::startsWith($this->path, '/') => asset(ltrim($this->path, '/')), // файли з public/, напр. демо-фото
+            default => Storage::disk('public')->url($this->path),
+        });
     }
 }
