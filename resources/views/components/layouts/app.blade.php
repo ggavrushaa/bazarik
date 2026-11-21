@@ -3,7 +3,7 @@
     header="checkout" — скорочена шапка оформлення (DeskCheckout / MobileCheckout).
     category — активна категорія для підсвітки в навігації.
 --}}
-@props(['title' => null, 'description' => null, 'header' => 'full', 'category' => null, 'footer' => true])
+@props(['title' => null, 'description' => null, 'header' => 'full', 'category' => null, 'footer' => true, 'headerTitle' => 'Оформлення', 'headerBack' => null])
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -29,7 +29,7 @@
 <div x-data="{ menu: false, catalog: false }" x-on:keydown.escape.window="menu = false; catalog = false" style="min-height: 100dvh; display: flex; flex-direction: column">
 
     @if ($header === 'checkout')
-        <x-shop.checkout-header />
+        <x-shop.checkout-header :title="$headerTitle" :back="$headerBack" />
     @else
         {{-- ── Телефон ── --}}
         <header class="bz-header only-mob">
@@ -163,6 +163,10 @@
                 <a href="{{ link_to_route_or_hash('info.returns') }}" style="color: var(--on-ink); text-decoration: none">Обмін і повернення</a>
                 <a href="{{ link_to_route_or_hash('info.contacts') }}" style="color: var(--on-ink); text-decoration: none">Контакти</a>
             </nav>
+            <nav aria-label="Документи" style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; font-weight: 600">
+                <a href="{{ link_to_route_or_hash('info.offer') }}" style="color: #d4d4dc">Публічна оферта</a>
+                <a href="{{ link_to_route_or_hash('info.privacy') }}" style="color: #d4d4dc">Політика конфіденційності</a>
+            </nav>
             <div style="font-size: 14px; line-height: 22px; font-weight: 600; color: #d4d4dc">{{ config('shop.phone') }} · Viber · Telegram<br>{{ config('shop.hours_short') }}</div>
             <div style="font-size: 12px; font-weight: 600; color: #a9a9b4">© {{ date('Y') }} Bazarik · {{ config('shop.company') }}</div>
         </footer>
@@ -192,6 +196,7 @@
                             <a href="{{ link_to_route_or_hash('info.contacts') }}">Контакти</a>
                             <a href="{{ link_to_route_or_hash('account') }}">Особистий кабінет</a>
                             <a href="{{ link_to_route_or_hash('info.offer') }}">Публічна оферта</a>
+                            <a href="{{ link_to_route_or_hash('info.privacy') }}">Політика конфіденційності</a>
                         </nav>
                     </div>
                     <div>

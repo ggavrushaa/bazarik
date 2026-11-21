@@ -2,25 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Auth\CompleteLogin;
+use App\Livewire\AuthPage;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+
+/**
+ * Вхід = реєстрація: телефон → код з SMS → ім'я (лише нові). Логіка — у Livewire AuthPage / AuthModal
+ * та app/Actions/Auth; тут лише сторінки й вихід.
+ */
 class AuthController extends Controller
 {
-    public function phone()
+    public function phone(): View|RedirectResponse
     {
-        abort(404); // TODO: етап 2
+        if (Auth::guard('customer')->check()) {
+            return redirect()->route('account');
+        }
+
+        return view('pages.auth.login', ['step' => 'phone']);
     }
 
-    public function code()
+    public function code(): View|RedirectResponse
     {
-        abort(404); // TODO: етап 2
+        if (Auth::guard('customer')->check()) {
+            return redirect()->route('account');
+        }
+        if (! session(AuthPage::PHONE_KEY)) {
+            return redirect()->route('login');
+        }
+
+        return view('pages.auth.login', ['step' => 'code']);
     }
 
-    public function name()
+    public function name(): View|RedirectResponse
     {
-        abort(404); // TODO: етап 2
+        $customer = Auth::guard('customer')->user();
+        if (! $customer) {
+            return redirect()->route('login');
+        }
+        if (! CompleteLogin::needsName($customer)) {
+            return redirect()->intended(route('account'));
+        }
+
+        return view('pages.auth.login', ['step' => 'name']);
     }
 
-    public function logout()
+    public function logout(Request $request): RedirectResponse
     {
-        abort(404); // TODO: етап 2
+        Auth::guard('customer')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
     }
 }

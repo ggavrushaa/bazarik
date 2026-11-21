@@ -127,9 +127,17 @@
         </button>
     </div>
     @unless ($apparel)
-        <a class="bz-btn bz-btn--secondary bz-btn--block only-mob" href="{{ $quickBuyUrl }}">Купити в 1 клік</a>
+        <a class="bz-btn bz-btn--secondary bz-btn--block only-mob" href="{{ $quickBuyUrl }}?variant={{ $buyVariant->id }}">Купити в 1 клік</a>
     @endunless
-    <a class="bz-btn bz-btn--ghost bz-btn--block only-desk" href="{{ $quickBuyUrl }}" style="margin-top: -12px">Купити в 1 клік</a>
+    {{-- Десктоп: модалка QuickBuyModal поверх товару; без JS — сторінка. Одяг — спершу розмір --}}
+    @if ($apparel)
+        <a class="bz-btn bz-btn--ghost bz-btn--block only-desk" href="{{ $quickBuyUrl }}" style="margin-top: -12px"
+           :href="current() ? @js($quickBuyUrl.'?variant=') + current().id : @js($quickBuyUrl)"
+           x-on:click.prevent="const v = current(); if (!size || !v || v.stock === 0) { needSize = true; document.getElementById('sizes')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; } Livewire.dispatch('open-quick-buy', { productId: {{ $product->id }}, variantId: v.id })">Купити в 1 клік</a>
+    @else
+        <a class="bz-btn bz-btn--ghost bz-btn--block only-desk" href="{{ $quickBuyUrl }}?variant={{ $buyVariant->id }}" style="margin-top: -12px"
+           x-on:click.prevent="Livewire.dispatch('open-quick-buy', { productId: {{ $product->id }}, variantId: {{ $buyVariant->id }} })">Купити в 1 клік</a>
+    @endif
 
     {{-- Доставка: у одягу на телефоні — після розмірів; на десктопі — після кнопок --}}
     <div @class(['bz-delivery', 'bz-delivery--box', 'only-desk' => ! $apparel])>

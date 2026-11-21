@@ -2,30 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
+
+/** Інфосторінки для покупців: MobileDelivery / DeskDelivery, MobileReturns / DeskReturns, MobileContacts / DeskContacts, оферта, конфіденційність. */
 class InfoController extends Controller
 {
-    public function delivery()
+    public function delivery(): View
     {
-        abort(404); // TODO: етап 2
+        return view('pages.info.delivery');
     }
 
-    public function returns()
+    public function returns(): View
     {
-        abort(404); // TODO: етап 2
+        return view('pages.info.returns');
     }
 
-    public function contacts()
+    public function contacts(): View
     {
-        abort(404); // TODO: етап 2
+        return view('pages.info.contacts');
     }
 
-    public function offer()
+    public function offer(): View
     {
-        abort(404); // TODO: етап 2
+        return view('pages.info.offer');
     }
 
-    public function privacy()
+    public function privacy(): View
     {
-        abort(404); // TODO: етап 2
+        return view('pages.info.privacy');
     }
 }
