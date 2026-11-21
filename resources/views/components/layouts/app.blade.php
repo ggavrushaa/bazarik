@@ -23,6 +23,8 @@
     $activeRoot = $category?->parent ?? $category;
     $cutoff = config('shop.same_day_cutoff');
     $freeFrom = money(config('shop.free_delivery_from'));
+    $customer = auth('customer')->user();
+    $authModal = class_exists(\App\Livewire\AuthModal::class);
 @endphp
 <div x-data="{ menu: false, catalog: false }" x-on:keydown.escape.window="menu = false; catalog = false" style="min-height: 100dvh; display: flex; flex-direction: column">
 
@@ -71,7 +73,12 @@
                     <button type="submit" aria-label="Шукати"><x-bz.icon name="search" size="20" stroke="2.4" /></button>
                 </form>
                 <nav class="dk-acts" aria-label="Профіль">
-                    <a class="dk-act" href="{{ link_to_route_or_hash('login') }}"><x-bz.icon name="user" size="24" />Увійти</a>
+                    @if ($customer)
+                        <a class="dk-act" href="{{ route('account') }}"><x-bz.icon name="user" size="24" />{{ $customer->first_name ?: 'Кабінет' }}</a>
+                    @else
+                        {{-- На десктопі вхід — модалка (DeskAuth); без JS — сторінка /login --}}
+                        <a class="dk-act" href="{{ route('login') }}" @if ($authModal) x-on:click.prevent="Livewire.dispatch('open-auth')" @endif><x-bz.icon name="user" size="24" />Увійти</a>
+                    @endif
                     <a class="dk-act" href="{{ link_to_route_or_hash('account.favorites') }}"><x-bz.icon name="heart" size="24" />Обране</a>
                     <livewire:cart-badge variant="desk" />
                 </nav>
@@ -110,7 +117,11 @@
                     <a class="bz-logo" href="{{ route('home') }}" aria-label="Bazarik, на головну"><x-logo /></a>
                     <button class="bz-icon-btn" type="button" aria-label="Закрити меню" style="background: transparent" x-on:click="menu = false"><x-bz.icon name="close" /></button>
                 </div>
-                <a class="bz-btn bz-btn--secondary bz-btn--block" href="{{ link_to_route_or_hash('login') }}">Увійти або зареєструватися</a>
+                @if ($customer)
+                    <a class="bz-btn bz-btn--secondary bz-btn--block" href="{{ route('account') }}">Кабінет{{ $customer->first_name ? ' · '.$customer->first_name : '' }}</a>
+                @else
+                    <a class="bz-btn bz-btn--secondary bz-btn--block" href="{{ route('login') }}">Увійти або зареєструватися</a>
+                @endif
                 <div style="font-size: 12px; font-weight: 800; letter-spacing: .06em; color: var(--ink-muted)">КАТАЛОГ</div>
                 <div>
                     @foreach ($navCategories as $nav)
@@ -203,6 +214,9 @@
 </div>
 
 <livewire:cart-overlays />
+{{-- Глобальні модалки етапу 2 (десктоп): вхід і «Купити в 1 клік» --}}
+@if ($authModal)<livewire:auth-modal />@endif
+@if (class_exists(\App\Livewire\QuickBuyModal::class))<livewire:quick-buy-modal />@endif
 @livewireScripts
 </body>
 </html>

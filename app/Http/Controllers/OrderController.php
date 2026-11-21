@@ -14,4 +14,9 @@ class OrderController extends Controller
 
         return view('pages.order-success', ['order' => $order]);
     }
+
+    public function paymentFailed(Order $order)
+    {
+        abort(404); // TODO: етап 2
+    }
 }
