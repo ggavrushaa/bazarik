@@ -23,6 +23,7 @@ class Product extends Model
             'rating' => 'decimal:1',
             'badge' => ProductBadge::class,
             'specs' => 'array',
+            'highlights' => 'array',
             'size_chart' => 'array',
             'is_apparel' => 'boolean',
             'is_active' => 'boolean',
@@ -47,6 +48,12 @@ class Product extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class)->orderBy('sort');
+    }
+
+    /** Товар для блоку «Разом дешевше» */
+    public function bundleProduct(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'bundle_product_id');
     }
 
     public function collections(): BelongsToMany
@@ -80,6 +87,35 @@ class Product extends Model
 
             return (int) round(100 - $this->price / $this->old_price * 100);
         });
+    }
+
+    /** «S–XXL» — розміри, які є на складі (для карток одягу) */
+    protected function sizeRange(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            if (! $this->is_apparel) {
+                return null;
+            }
+
+            $order = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+            $sizes = $this->variants
+                ->filter(fn (ProductVariant $v) => $v->is_active && $v->stock > 0 && $v->size)
+                ->pluck('size')->unique()
+                ->sortBy(fn (string $s) => array_search($s, $order, true) ?? 99)
+                ->values();
+
+            if ($sizes->isEmpty()) {
+                return null;
+            }
+
+            return $sizes->count() === 1 ? $sizes->first() : $sizes->first().'–'.$sizes->last();
+        });
+    }
+
+    /** Сума залишків по активних варіантах */
+    protected function totalStock(): Attribute
+    {
+        return Attribute::get(fn (): int => (int) $this->variants->where('is_active', true)->sum('stock'));
     }
 
     public function getRouteKeyName(): string

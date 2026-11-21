@@ -1,21 +1,57 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/nunito'; /* шрифт лежить у нас, без запитів до Google/Bunny */
+
+/* Шрифти лежать у нас (npm), без запитів до Google */
+@import '@fontsource-variable/nunito';
+@import '@fontsource-variable/manrope';
+
+/* Дизайн-система з bazarik-handoff/design-system — єдине джерело кольорів, радіусів, відступів */
+@import './bazarik/variables.css';
+@import './bazarik/components.css';
+@import './bazarik/layout.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-/* Кольори й шрифт з концепції логотипа «Навіс над словом» */
-@theme {
-    --font-sans: 'Nunito Variable', 'Nunito', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+/* Ті самі сімейства, що у variables.css, плюс назви локальних variable-шрифтів */
+:root {
+    --font-display: "Nunito Variable", "Nunito", "Manrope Variable", "Manrope", system-ui, sans-serif;
+    --font-sans: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 
-    --color-brand: #ff7a1a;        /* смуги навісу, кнопки */
-    --color-brand-dark: #d95e0a;   /* друга смуга, hover */
-    --color-brand-50: #fff4ec;
-    --color-brand-100: #ffe4cf;
-    --color-ink: #1f1f24;          /* графіт: назва, текст */
-    --color-muted: #6b6b73;
-    --color-line: #ececef;
-    --color-surface: #f7f7f8;
+/*
+ * Кольори токенів як утиліти Tailwind: bg-surface, text-ink-muted… Значення — лише з variables.css.
+ * Радіуси/тіні/шрифти мають ті самі імена, що й у variables.css, тож у розмітці
+ * пишемо rounded-(--radius-l), shadow-(--shadow-pop), font-display.
+ */
+@theme inline {
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-surface-warm: var(--surface-warm);
+    --color-line: var(--line);
+    --color-line-strong: var(--line-strong);
+    --color-ink: var(--ink);
+    --color-ink-2: var(--ink-2);
+    --color-ink-muted: var(--ink-muted);
+    --color-on-ink: var(--on-ink);
+    --color-brand: var(--brand);
+    --color-brand-hover: var(--brand-hover);
+    --color-brand-dark: var(--brand-hover);
+    --color-on-brand: var(--on-brand);
+    --color-brand-ink: var(--brand-ink);
+    --color-sale: var(--sale);
+    --color-success: var(--success);
+    --color-success-soft: var(--success-soft);
+    --color-success-strong: var(--success-strong);
+    --color-warning-soft: var(--warning-soft);
+    --color-warning-strong: var(--warning-strong);
+}
+
+@utility font-display {
+    font-family: var(--font-display);
+}
+
+@utility tabular {
+    font-variant-numeric: tabular-nums;
 }
 
 @layer base {
@@ -24,23 +60,9 @@
     }
 
     body {
-        @apply bg-white font-sans text-ink antialiased;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
     }
-}
-
-/* Кнопки й контейнер — як утиліти Tailwind v4, щоб працювали варіанти (md:, hover:) */
-@utility btn {
-    @apply inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-6 text-base font-extrabold transition active:scale-[.98];
-}
-
-@utility btn-primary {
-    @apply btn bg-brand text-white hover:bg-brand-dark;
-}
-
-@utility btn-secondary {
-    @apply btn border border-line bg-white text-ink hover:border-ink;
-}
-
-@utility container-shop {
-    @apply mx-auto w-full max-w-6xl px-4 md:px-6;
 }
