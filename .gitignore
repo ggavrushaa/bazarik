@@ -25,3 +25,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Ассети Filament — публікуються автоматично (composer post-autoload-dump → filament:upgrade)
+/public/css/filament
+/public/js/filament
+/public/fonts/filament
