@@ -45,6 +45,7 @@
             </span>
         </div>
 
+        <div wire:loading.flex style="justify-content: center; padding: 4px 0 12px"><x-shop.loader :label="null" size="40" /></div>
         <div class="g4" wire:loading.class="opacity-60">
             @foreach ($products as $product)
                 <x-shop.product-card :product="$product" :sizes="true" wire:key="p-{{ $product->id }}" />
@@ -162,6 +163,7 @@
                         @endif
                     </div>
                 @else
+                    <div wire:loading.flex style="justify-content: center; padding: 4px 0 12px"><x-shop.loader :label="null" size="40" /></div>
                     <div class="g3 md:[&_.bz-dots]:hidden!" wire:loading.class="opacity-60">
                         @foreach ($products as $product)
                             <x-shop.product-card :product="$product" :dots="true" :sizes="true" :size="count($selected['size']) === 1 ? $selected['size'][0] : null" wire:key="p-{{ $product->id }}" />

@@ -19,7 +19,7 @@ class Customer extends Authenticatable
 
     protected function casts(): array
     {
-        return ['phone_verified_at' => 'datetime'];
+        return ['phone_verified_at' => 'datetime', 'viber_opt_in' => 'boolean'];
     }
 
     public function addresses(): HasMany

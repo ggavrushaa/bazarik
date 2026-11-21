@@ -42,5 +42,9 @@ return [
         'ttl_minutes' => 5,
         'max_attempts' => 5,
         'resend_after_seconds' => 60,
+        // Захист від перебору й SMS-флуду
+        'max_sends_per_phone' => 5,
+        'max_sends_per_ip' => 20,
+        'throttle_decay_seconds' => 3600,
     ],
 ];
